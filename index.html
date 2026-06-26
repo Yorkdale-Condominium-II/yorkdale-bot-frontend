@@ -398,19 +398,21 @@
 </div>
 
 <script>
-  const response = await fetch(`${API_URL}/chat`, {
-  method: "POST",
-  headers: { 
-    "Content-Type": "application/json",
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHNpd3p5em12Zmx5aXRvbG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDMxNDEsImV4cCI6MjA5NzkxOTE0MX0.PqR3BiWnthqlp_gV-yzrgz1LWMQi4gZVxS7qCvS0Koc' \"
-  },
-  body: JSON.stringify({
-    message,
-    session_id: sessionId,
-    channel: "web",
-  }),
-});
-  
+  const API_URL = "https://adxsiwzyzmvflyitolol.supabase.co/functions/v1";
+  let sessionId = null;
+  let isLoading = false;
+
+  const chatArea = document.getElementById("chat-area");
+  const input = document.getElementById("user-input");
+  const sendBtn = document.getElementById("send-btn");
+
+  // Auto-resize textarea
+  input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 120) + "px";
+  });
+
+  // Send on Enter (Shift+Enter for newline)
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -525,7 +527,7 @@
     try {
       const response = await fetch(`${API_URL}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHNpd3p5em12Zmx5aXRvbG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDMxNDEsImV4cCI6MjA5NzkxOTE0MX0.PqR3BiWnthqlp_gV-yzrgz1LWMQi4gZVxS7qCvS0Koc" },
         body: JSON.stringify({
           message,
           session_id: sessionId,
