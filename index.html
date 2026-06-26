@@ -78,6 +78,23 @@
       flex-shrink: 0;
     }
 
+    .reset-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 6px;
+      color: var(--white);
+      font-size: 12px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .reset-btn:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
     /* Chat area */
     #chat-area {
       flex: 1;
@@ -348,6 +365,7 @@
     <h1>Yorkdale Residences II</h1>
     <p>Resident Assistant · 120 Varna Drive</p>
   </div>
+  <button class="reset-btn" onclick="resetChat()" title="Start a new conversation">↺ New chat</button>
   <div class="status-dot" title="Online"></div>
 </header>
 
@@ -401,6 +419,26 @@
       sendMessage();
     }
   });
+
+  function resetChat() {
+    sessionId = null;
+    chatArea.innerHTML = `
+      <div class="welcome" id="welcome">
+        <h2>Hello, neighbour!</h2>
+        <p>I can answer questions about building rules, policies, move-in procedures, appliances, and your rights as a resident. What can I help you with?</p>
+        <div class="quick-questions">
+          <button class="quick-btn" onclick="askQuick('What are the quiet hours?')">Quiet hours</button>
+          <button class="quick-btn" onclick="askQuick('How do I book the elevator for a move?')">Elevator booking</button>
+          <button class="quick-btn" onclick="askQuick('What is the pet policy?')">Pet policy</button>
+          <button class="quick-btn" onclick="askQuick('Can I have a BBQ on my balcony?')">Balcony BBQ</button>
+          <button class="quick-btn" onclick="askQuick('What does the building insurance cover?')">Insurance coverage</button>
+          <button class="quick-btn" onclick="askQuick('How do I get a new key fob?')">Key fob</button>
+        </div>
+      </div>`;
+    input.value = "";
+    input.style.height = "auto";
+    input.focus();
+  }
 
   function askQuick(question) {
     input.value = question;
