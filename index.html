@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yorkdale Residences II — Resident Assistant</title>
+  <title>Yorkdale Condominium II — Resident Assistant Mikee</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -394,7 +394,7 @@
     ></textarea>
     <button id="send-btn" onclick="sendMessage()" aria-label="Send message">➤</button>
   </div>
-  <p class="disclaimer">Answers are based on TSCC #2937 documents. Always verify important decisions with the board.</p>
+  <p class="disclaimer">Answers are based on TSCC #2937 documents, Condominium Act 1998, and Condominium Authority of Ontario guidelines. Always verify legal decisions with the board.</p>
 </div>
 
 <script>
@@ -493,7 +493,7 @@
     if (escalated && role === "assistant") {
       const esc = document.createElement("div");
       esc.className = "escalation-notice";
-      esc.innerHTML = "⚠️ For this type of request, please also contact the property manager directly at <strong>manager.yorkdalecondo@gmail.com</strong> or <strong>416-782-1313</strong>.";
+      esc.innerHTML = "⚠️ For this type of request, please contact the property manager directly at <strong>manager.yorkdalecondo@gmail.com</strong> or <strong>416-782-1313</strong>.";
       bubble.appendChild(esc);
     }
 
@@ -558,7 +558,7 @@
       hideTyping();
       appendMessage(
         "assistant",
-        "Sorry, I'm having trouble connecting right now. Please try again in a moment, or contact the management office directly at manager.yorkdalecondo@gmail.com or 416-782-1313.",
+        "Sorry, I am having trouble connecting right now. Please try again in a minute, or contact the management office directly at manager.yorkdalecondo@gmail.com or 416-782-1313.",
         [],
         false
       );
