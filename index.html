@@ -468,14 +468,25 @@
       .replace(/\n/g, "<br>");
     bubble.innerHTML = formatted;
 
-    // Sources
-    if (sources && sources.length > 0 && role === "assistant") {
-      const srcDiv = document.createElement("div");
-      srcDiv.className = "sources";
-      srcDiv.innerHTML = `<strong>Sources</strong><ul>${
-        sources.map(s => `<li>${s}</li>`).join("")
-      }</ul>`;
-      bubble.appendChild(srcDiv);
+    // Sources — only show if answer contains Source: citation, clean up filenames
+    const hasSourceCitation = content.toLowerCase().includes("source:");
+    if (sources && sources.length > 0 && role === "assistant" && hasSourceCitation) {
+      const cleanSources = [...new Set(
+        sources.map(s => s
+          .replace(/\s*—\s*chunk\s*\d+/gi, "")
+          .replace(/\.pdf$/i, "")
+          .replace(/\.txt$/i, "")
+          .trim()
+        )
+      )];
+      if (cleanSources.length > 0) {
+        const srcDiv = document.createElement("div");
+        srcDiv.className = "sources";
+        srcDiv.innerHTML = `<strong>Source</strong><ul>${
+          cleanSources.map(s => `<li>${s}</li>`).join("")
+        }</ul>`;
+        bubble.appendChild(srcDiv);
+      }
     }
 
     // Escalation notice
