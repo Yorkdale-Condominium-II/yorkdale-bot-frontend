@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yorkdale Condominium II — Resident Assistant Mikee</title>
+  <title>Yorkdale Condominium II — Resident Assistant</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -33,7 +33,6 @@
       flex-direction: column;
     }
 
-    /* Header */
     header {
       background: var(--primary);
       color: var(--white);
@@ -57,21 +56,11 @@
       flex-shrink: 0;
     }
 
-    .header-text h1 {
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 1.2;
-    }
-
-    .header-text p {
-      font-size: 12px;
-      opacity: 0.75;
-      margin-top: 1px;
-    }
+    .header-text h1 { font-size: 16px; font-weight: 600; line-height: 1.2; }
+    .header-text p { font-size: 12px; opacity: 0.75; margin-top: 1px; }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       background: #4caf50;
       border-radius: 50%;
       margin-left: auto;
@@ -90,12 +79,8 @@
       transition: background 0.15s;
       flex-shrink: 0;
     }
+    .reset-btn:hover { background: rgba(255,255,255,0.25); }
 
-    .reset-btn:hover {
-      background: rgba(255,255,255,0.25);
-    }
-
-    /* Chat area */
     #chat-area {
       flex: 1;
       overflow-y: auto;
@@ -106,7 +91,6 @@
       scroll-behavior: smooth;
     }
 
-    /* Messages */
     .message {
       display: flex;
       gap: 10px;
@@ -119,36 +103,20 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .message.user {
-      align-self: flex-end;
-      flex-direction: row-reverse;
-    }
-
-    .message.assistant {
-      align-self: flex-start;
-    }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .message.assistant { align-self: flex-start; }
 
     .avatar {
-      width: 30px;
-      height: 30px;
+      width: 30px; height: 30px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       font-size: 14px;
       flex-shrink: 0;
       margin-top: 2px;
     }
 
-    .message.user .avatar {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .message.assistant .avatar {
-      background: var(--accent-light);
-      color: var(--accent);
-    }
+    .message.user .avatar { background: var(--primary-light); color: var(--primary); }
+    .message.assistant .avatar { background: var(--accent-light); color: var(--accent); }
 
     .bubble {
       padding: 12px 16px;
@@ -170,7 +138,6 @@
       box-shadow: var(--shadow);
     }
 
-    /* Sources */
     .sources {
       margin-top: 10px;
       padding: 8px 12px;
@@ -190,17 +157,9 @@
       font-size: 10px;
     }
 
-    .sources ul {
-      list-style: none;
-      padding: 0;
-    }
+    .sources ul { list-style: none; padding: 0; }
+    .sources ul li::before { content: "→ "; color: var(--accent); }
 
-    .sources ul li::before {
-      content: "→ ";
-      color: var(--accent);
-    }
-
-    /* Escalation badge */
     .escalation-notice {
       margin-top: 10px;
       padding: 8px 12px;
@@ -211,25 +170,15 @@
       color: #5d4037;
     }
 
-    /* Typing indicator */
-    .typing .bubble {
-      padding: 14px 16px;
-    }
+    .typing .bubble { padding: 14px 16px; }
 
-    .typing-dots {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-
+    .typing-dots { display: flex; gap: 4px; align-items: center; }
     .typing-dots span {
-      width: 7px;
-      height: 7px;
+      width: 7px; height: 7px;
       background: var(--gray-500);
       border-radius: 50%;
       animation: bounce 1.2s infinite;
     }
-
     .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
     .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 
@@ -238,7 +187,6 @@
       30% { transform: translateY(-6px); }
     }
 
-    /* Welcome message */
     .welcome {
       text-align: center;
       padding: 24px 20px;
@@ -258,7 +206,6 @@
       margin-bottom: 20px;
     }
 
-    /* Quick questions */
     .quick-questions {
       display: flex;
       flex-wrap: wrap;
@@ -277,13 +224,8 @@
       transition: all 0.15s ease;
       font-family: inherit;
     }
+    .quick-btn:hover { background: var(--primary-light); border-color: var(--primary); }
 
-    .quick-btn:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
-    }
-
-    /* Input area */
     #input-area {
       background: var(--white);
       border-top: 1px solid var(--gray-200);
@@ -315,17 +257,11 @@
       background: var(--gray-50);
       transition: border-color 0.15s;
     }
-
-    #user-input:focus {
-      border-color: var(--primary);
-      background: var(--white);
-    }
-
+    #user-input:focus { border-color: var(--primary); background: var(--white); }
     #user-input::placeholder { color: var(--gray-500); }
 
     #send-btn {
-      width: 42px;
-      height: 42px;
+      width: 42px; height: 42px;
       border-radius: 50%;
       border: none;
       background: var(--primary);
@@ -338,7 +274,6 @@
       transition: background 0.15s, transform 0.1s;
       font-size: 18px;
     }
-
     #send-btn:hover { background: #15304d; }
     #send-btn:active { transform: scale(0.94); }
     #send-btn:disabled { background: var(--gray-200); cursor: not-allowed; }
@@ -350,7 +285,6 @@
       margin-top: 8px;
     }
 
-    /* Responsive */
     @media (min-width: 640px) {
       #chat-area { padding: 24px; }
       .message { max-width: 75%; }
@@ -394,11 +328,12 @@
     ></textarea>
     <button id="send-btn" onclick="sendMessage()" aria-label="Send message">➤</button>
   </div>
-  <p class="disclaimer">Answers are based on TSCC #2937 documents, Condominium Act 1998, and Condominium Authority of Ontario guidelines. Always verify legal decisions with the board.</p>
+  <p class="disclaimer">Answers are based on TSCC #2937 governing documents, Condominium Authority of Ontario guidelines, and the Condominium Act, 1998 (S.O. 1998, c. 19). For legal or binding decisions, always consult your property manager or the board.</p>
 </div>
 
 <script>
   const API_URL = "https://adxsiwzyzmvflyitolol.supabase.co/functions/v1";
+  const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHNpd3p5em12Zmx5aXRvbG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDMxNDEsImV4cCI6MjA5NzkxOTE0MX0.PqR3BiWnthqlp_gV-yzrgz1LWMQi4gZVxS7qCvS0Koc";
   let sessionId = null;
   let isLoading = false;
 
@@ -406,13 +341,11 @@
   const input = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
 
-  // Auto-resize textarea
   input.addEventListener("input", () => {
     input.style.height = "auto";
     input.style.height = Math.min(input.scrollHeight, 120) + "px";
   });
 
-  // Send on Enter (Shift+Enter for newline)
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -462,15 +395,14 @@
     const bubble = document.createElement("div");
     bubble.className = "bubble";
 
-    // Render simple markdown (bold, newlines)
     const formatted = content
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
       .replace(/\n/g, "<br>");
     bubble.innerHTML = formatted;
 
-    // Sources — only show if answer contains Source: citation, clean up filenames
+    // Sources — only show when answer cites a source, clean filenames
     const hasSourceCitation = content.toLowerCase().includes("source:");
-    if (sources && sources.length > 0 && role === "assistant" && hasSourceCitation) {
+    if (hasSourceCitation && sources && sources.length > 0 && role === "assistant") {
       const cleanSources = [...new Set(
         sources.map(s => s
           .replace(/\s*—\s*chunk\s*\d+/gi, "")
@@ -478,7 +410,8 @@
           .replace(/\.txt$/i, "")
           .trim()
         )
-      )];
+      )].filter(s => s.length > 0);
+
       if (cleanSources.length > 0) {
         const srcDiv = document.createElement("div");
         srcDiv.className = "sources";
@@ -538,7 +471,10 @@
     try {
       const response = await fetch(`${API_URL}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHNpd3p5em12Zmx5aXRvbG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDMxNDEsImV4cCI6MjA5NzkxOTE0MX0.PqR3BiWnthqlp_gV-yzrgz1LWMQi4gZVxS7qCvS0Koc" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${ANON_KEY}`
+        },
         body: JSON.stringify({
           message,
           session_id: sessionId,
@@ -558,7 +494,7 @@
       hideTyping();
       appendMessage(
         "assistant",
-        "Sorry, I am having trouble connecting right now. Please try again in a minute, or contact the management office directly at manager.yorkdalecondo@gmail.com or 416-782-1313.",
+        "Sorry, I am having trouble connecting right now. Please try again in a moment, or contact the management office directly at manager.yorkdalecondo@gmail.com or 416-782-1313.",
         [],
         false
       );
