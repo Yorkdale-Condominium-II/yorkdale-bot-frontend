@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yorkdale Condominium II — Board Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1a3a5c;
+      --primary-light: #e8f0f8;
+      --primary-mid: #2d5a8e;
+      --accent: #2e7d52;
+      --accent-light: #e8f5ee;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --gray-50: #f8f9fa;
+      --gray-100: #f1f3f5;
+      --gray-200: #e9ecef;
+      --gray-300: #dee2e6;
+      --gray-500: #868e96;
+      --gray-700: #495057;
+      --gray-900: #212529;
+      --white: #ffffff;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --shadow: 0 1px 4px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-900);
+      min-height: 100vh;
+    }
+
+    /* ── AUTH SCREEN ── */
+    #auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%);
+    }
+
+    .auth-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .auth-logo .icon {
+      width: 56px; height: 56px;
+      background: var(--primary-light);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      margin: 0 auto 12px;
+    }
+
+    .auth-logo h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .auth-logo p {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: var(--gray-500);
+      font-size: 12px;
+    }
+
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--gray-200);
+    }
+
+    .btn-google {
+      width: 100%;
+      padding: 11px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.15s, border-color 0.15s;
+      color: var(--gray-900);
+    }
+
+    .btn-google:hover { background: var(--gray-50); border-color: var(--gray-300); }
+
+    .google-icon {
+      width: 18px; height: 18px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23EA4335' d='M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z'/%3E%3Cpath fill='%234285F4' d='M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z'/%3E%3Cpath fill='%23FBBC05' d='M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z'/%3E%3Cpath fill='%2334A853' d='M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="email"], input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+      color: var(--gray-900);
+      background: var(--white);
+    }
+
+    input:focus { border-color: var(--primary); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 11px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--primary-mid); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .auth-error {
+      background: var(--red-light);
+      color: var(--red);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    /* ── ADMIN LAYOUT ── */
+    #admin-screen { display: none; }
+
+    .admin-header {
+      background: var(--primary);
+      color: var(--white);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-md);
+    }
+
+    .admin-header .logo { font-size: 15px; font-weight: 600; flex: 1; }
+    .admin-header .logo span { opacity: 0.6; font-weight: 400; font-size: 13px; }
+
+    .header-user {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    .btn-signout {
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--radius-sm);
+      color: var(--white);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+
+    .btn-signout:hover { background: rgba(255,255,255,0.2); }
+
+    /* Nav tabs */
+    .admin-nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-tab {
+      padding: 14px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-500);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: inherit;
+    }
+
+    .nav-tab:hover { color: var(--primary); }
+    .nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .admin-body { padding: 28px 24px; max-width: 900px; }
+
+    /* ── PANELS ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 { font-size: 18px; font-weight: 600; color: var(--primary); }
+    .section-header p { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+    /* Cards */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--gray-900); }
+
+    /* Status badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .badge.green { background: var(--accent-light); color: var(--accent); }
+    .badge.amber { background: var(--amber-light); color: var(--amber); }
+    .badge.red { background: var(--red-light); color: var(--red); }
+    .badge.gray { background: var(--gray-100); color: var(--gray-700); }
+
+    /* Document list */
+    .doc-list { list-style: none; }
+
+    .doc-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .doc-item:last-child { border-bottom: none; }
+
+    .doc-icon {
+      width: 36px; height: 36px;
+      background: var(--primary-light);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .doc-info { flex: 1; min-width: 0; }
+    .doc-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doc-meta { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+    .btn-danger {
+      padding: 5px 12px;
+      background: none;
+      border: 1px solid var(--red-light);
+      border-radius: var(--radius-sm);
+      color: var(--red);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .btn-danger:hover { background: var(--red-light); }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed var(--gray-200);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .upload-zone .icon { font-size: 32px; margin-bottom: 8px; }
+    .upload-zone p { font-size: 13px; color: var(--gray-500); }
+    .upload-zone strong { color: var(--primary); }
+
+    #file-input { display: none; }
+
+    /* Folder selector */
+    .folder-select {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .folder-chip {
+      padding: 6px 14px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      background: var(--white);
+      font-family: inherit;
+      transition: all 0.15s;
+      color: var(--gray-700);
+    }
+
+    .folder-chip.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    /* Ingestion */
+    .ingest-status {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-family: monospace;
+      font-size: 12px;
+      height: 200px;
+      overflow-y: auto;
+      color: var(--gray-700);
+      line-height: 1.7;
+    }
+
+    .log-line { display: block; }
+    .log-line.success { color: var(--accent); }
+    .log-line.error { color: var(--red); }
+    .log-line.info { color: var(--primary); }
+
+    .btn-ingest {
+      padding: 11px 24px;
+      background: var(--accent);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-ingest:hover { background: #245f3e; }
+    .btn-ingest:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Settings */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) { .settings-grid { grid-template-columns: 1fr; } }
+
+    .color-preview {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      border: 1px solid var(--gray-200);
+      cursor: pointer;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-save {
+      padding: 10px 20px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-save:hover { background: var(--primary-mid); }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-card .num { font-size: 28px; font-weight: 700; color: var(--primary); }
+    .stat-card .lbl { font-size: 11px; color: var(--gray-500); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--gray-900);
+      color: var(--white);
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    #toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- ── AUTH SCREEN ── -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="icon">🏢</div>
+      <h1>Yorkdale Condominium II</h1>
+      <p>Board Administration Panel</p>
+    </div>
+
+    <div id="auth-error" class="auth-error"></div>
+
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <div class="google-icon"></div>
+      Continue with Google
+    </button>
+
+    <div class="divider">or sign in with email</div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="board@example.com" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')signInWithEmail()" />
+    </div>
+    <button class="btn-primary" onclick="signInWithEmail()">Sign in</button>
+  </div>
+</div>
+
+<!-- ── ADMIN SCREEN ── -->
+<div id="admin-screen">
+  <header class="admin-header">
+    <div class="logo">Yorkdale Condominium II <span>Board Admin</span></div>
+    <span class="header-user" id="user-email"></span>
+    <button class="btn-signout" onclick="signOut()">Sign out</button>
+  </header>
+
+  <nav class="admin-nav">
+    <button class="nav-tab active" onclick="showTab('documents')">📄 Documents</button>
+    <button class="nav-tab" onclick="showTab('ingestion')">⚡ Ingestion</button>
+    <button class="nav-tab" onclick="showTab('settings')">⚙️ Settings</button>
+  </nav>
+
+  <div class="admin-body">
+
+    <!-- ── DOCUMENTS PANEL ── -->
+    <div id="panel-documents" class="panel active">
+      <div class="section-header">
+        <div>
+          <h2>Knowledge Base Documents</h2>
+          <p>Manage the documents the AI uses to answer resident questions</p>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="num" id="stat-chunks">—</div>
+          <div class="lbl">Indexed chunks</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="stat-docs">—</div>
+          <div class="lbl">Documents</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="stat-convos">—</div>
+          <div class="lbl">Conversations</div>
+        </div>
+      </div>
+
+      <!-- Upload -->
+      <div class="card">
+        <h3>Upload new document</h3>
+        <p style="font-size:13px;color:var(--gray-500);margin-bottom:14px;">Select the folder this document belongs to, then upload a PDF.</p>
+
+        <div class="folder-select" id="folder-select">
+          <button class="folder-chip selected" data-folder="01 - Governing Documents">Governing Documents</button>
+          <button class="folder-chip" data-folder="02 - New Owner Package">New Owner Package</button>
+          <button class="folder-chip" data-folder="03 - Insurance">Insurance</button>
+          <button class="folder-chip" data-folder="04 - External Reference">External Reference</button>
+          <button class="folder-chip" data-folder="05 - Notices & Bulletins">Notices & Bulletins</button>
+          <button class="folder-chip" data-folder="06 - Notice of Future Funding">Notice of Future Funding</button>
+        </div>
+
+        <div class="upload-zone" onclick="document.getElementById('file-input').click()" id="drop-zone">
+          <div class="icon">📤</div>
+          <p><strong>Click to upload</strong> or drag and drop a PDF here</p>
+          <p style="margin-top:4px;font-size:11px;">PDF files only · Max 20MB</p>
+        </div>
+        <input type="file" id="file-input" accept=".pdf,.txt" onchange="handleFileSelect(event)" />
+        <div id="upload-status" style="margin-top:10px;font-size:13px;color:var(--accent);display:none;"></div>
+      </div>
+
+      <!-- Document list -->
+      <div class="card">
+        <h3>Indexed documents</h3>
+        <ul class="doc-list" id="doc-list">
+          <li style="color:var(--gray-500);font-size:13px;padding:12px 0;">Loading documents...</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── INGESTION PANEL ── -->
+    <div id="panel-ingestion" class="panel">
+      <div class="section-header">
+        <div>
+          <h2>Document Ingestion</h2>
+          <p>Re-index documents after uploads or changes</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Run ingestion pipeline</h3>
+        <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">
+          This re-processes all documents in the knowledge base — extracting text, creating embeddings, and updating the vector index. Run this after uploading new documents.
+        </p>
+
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+          <button class="btn-ingest" onclick="runIngestion('all')" id="btn-ingest-all">
+            ⚡ Re-index all documents
+          </button>
+          <button class="btn-ingest" style="background:var(--primary);" onclick="runIngestion('new')" id="btn-ingest-new">
+            ➕ Index new documents only
+          </button>
+        </div>
+
+        <div class="ingest-status" id="ingest-log">
+          <span class="log-line" style="color:var(--gray-500);">Ingestion logs will appear here...</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Clear knowledge base</h3>
+        <p style="font-size:13px;color:var(--gray-500);margin-bottom:14px;">
+          Remove all indexed document chunks from the vector store. The bot will not be able to answer questions until you re-run ingestion.
+        </p>
+        <button class="btn-danger" onclick="clearKnowledgeBase()">🗑️ Clear all indexed chunks</button>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS PANEL ── -->
+    <div id="panel-settings" class="panel">
+      <div class="section-header">
+        <div>
+          <h2>Settings & Branding</h2>
+          <p>Customize how the bot appears to residents</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Building information</h3>
+        <div class="settings-grid">
+          <div class="form-group">
+            <label>Building name</label>
+            <input type="text" id="setting-name" value="Yorkdale Condominium II" />
+          </div>
+          <div class="form-group">
+            <label>Corporation number</label>
+            <input type="text" id="setting-corp" value="TSCC #2937" />
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" id="setting-address" value="120 Varna Drive, North York, Ontario" />
+          </div>
+          <div class="form-group">
+            <label>Property manager email</label>
+            <input type="email" id="setting-pm-email" value="manager.yorkdalecondo@gmail.com" />
+          </div>
+          <div class="form-group">
+            <label>Property manager phone</label>
+            <input type="text" id="setting-pm-phone" value="416-782-1313" />
+          </div>
+          <div class="form-group">
+            <label>Concierge phone</label>
+            <input type="text" id="setting-concierge" value="437-240-2763" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Chat widget appearance</h3>
+        <div class="settings-grid">
+          <div class="form-group">
+            <label>Primary colour</label>
+            <div class="input-row">
+              <input type="color" id="setting-primary-color" value="#1a3a5c" class="color-preview" />
+              <input type="text" id="setting-primary-hex" value="#1a3a5c" style="flex:1" oninput="syncColor('primary')" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Accent colour</label>
+            <div class="input-row">
+              <input type="color" id="setting-accent-color" value="#2e7d52" class="color-preview" />
+              <input type="text" id="setting-accent-hex" value="#2e7d52" style="flex:1" oninput="syncColor('accent')" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Welcome message</label>
+            <input type="text" id="setting-welcome" value="Hello, neighbour!" />
+          </div>
+          <div class="form-group">
+            <label>Chat placeholder text</label>
+            <input type="text" id="setting-placeholder" value="Ask a question about 120 Varna Drive…" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Quick question buttons</h3>
+        <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">These appear on the welcome screen. One per line.</p>
+        <textarea id="setting-quick-questions" rows="6" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;resize:vertical;outline:none;">What are the quiet hours?
+How do I book the elevator for a move?
+What is the pet policy?
+Can I have a BBQ on my balcony?
+What does the building insurance cover?
+How do I get a new key fob?</textarea>
+      </div>
+
+      <button class="btn-save" onclick="saveSettings()">Save all settings</button>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ── Supabase init ──────────────────────────────────────────
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://adxsiwzyzmvflyitolol.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHNpd3p5em12Zmx5aXRvbG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDMxNDEsImV4cCI6MjA5NzkxOTE0MX0.PqR3BiWnthqlp_gV-yzrgz1LWMQi4gZVxS7qCvS0Koc'
+  );
+
+  // ── Auth ───────────────────────────────────────────────────
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('admin-screen').style.display = 'block';
+      document.getElementById('user-email').textContent = session.user.email;
+      loadStats();
+      loadDocuments();
+    } else {
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('admin-screen').style.display = 'none';
+    }
+  });
+
+  async function signInWithGoogle() {
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href }
+    });
+    if (error) showError(error.message);
+  }
+
+  async function signInWithEmail() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) showError(error.message);
+  }
+
+  async function signOut() {
+    await sb.auth.signOut();
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('auth-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  // ── Navigation ─────────────────────────────────────────────
+  function showTab(name) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // ── Stats ──────────────────────────────────────────────────
+  async function loadStats() {
+    const { count: chunks } = await sb.from('document_chunks').select('*', { count: 'exact', head: true });
+    const { data: docs } = await sb.from('document_chunks').select('source_file');
+    const { count: convos } = await sb.from('conversations').select('*', { count: 'exact', head: true });
+    const uniqueDocs = new Set(docs?.map(d => d.source_file)).size;
+    document.getElementById('stat-chunks').textContent = chunks || 0;
+    document.getElementById('stat-docs').textContent = uniqueDocs || 0;
+    document.getElementById('stat-convos').textContent = convos || 0;
+  }
+
+  // ── Documents ──────────────────────────────────────────────
+  async function loadDocuments() {
+    const { data } = await sb.from('document_chunks').select('source_file, category, created_at');
+    if (!data) return;
+
+    const docs = {};
+    data.forEach(d => {
+      if (!docs[d.source_file]) {
+        docs[d.source_file] = { count: 0, category: d.category, created_at: d.created_at };
+      }
+      docs[d.source_file].count++;
+    });
+
+    const list = document.getElementById('doc-list');
+    if (!Object.keys(docs).length) {
+      list.innerHTML = '<li style="color:var(--gray-500);font-size:13px;padding:12px 0;">No documents indexed yet. Upload documents above.</li>';
+      return;
+    }
+
+    list.innerHTML = Object.entries(docs).map(([name, info]) => `
+      <li class="doc-item">
+        <div class="doc-icon">📄</div>
+        <div class="doc-info">
+          <div class="doc-name">${name}</div>
+          <div class="doc-meta">${info.count} chunks · ${info.category} · ${new Date(info.created_at).toLocaleDateString('en-CA')}</div>
+        </div>
+        <span class="badge green">Indexed</span>
+        <button class="btn-danger" onclick="deleteDocument('${name.replace(/'/g, "\\'")}')">Delete</button>
+      </li>
+    `).join('');
+  }
+
+  async function deleteDocument(filename) {
+    if (!confirm(`Delete "${filename}" from the knowledge base?`)) return;
+    await sb.from('document_chunks').delete().eq('source_file', filename);
+    showToast(`Deleted: ${filename}`);
+    loadDocuments();
+    loadStats();
+  }
+
+  // ── Upload ─────────────────────────────────────────────────
+  let selectedFolder = '01 - Governing Documents';
+
+  document.querySelectorAll('.folder-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.folder-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedFolder = chip.dataset.folder;
+    });
+  });
+
+  const dropZone = document.getElementById('drop-zone');
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) uploadFile(file);
+  });
+
+  function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) uploadFile(file);
+  }
+
+  async function uploadFile(file) {
+    const status = document.getElementById('upload-status');
+    status.style.display = 'block';
+    status.textContent = `Uploading ${file.name}...`;
+    status.style.color = 'var(--primary)';
+
+    const path = `${selectedFolder}/${file.name}`;
+    const { error } = await sb.storage.from('documents').upload(path, file, { upsert: true });
+
+    if (error) {
+      status.textContent = `Upload failed: ${error.message}`;
+      status.style.color = 'var(--red)';
+    } else {
+      status.textContent = `✓ Uploaded successfully. Go to Ingestion tab to index this document.`;
+      status.style.color = 'var(--accent)';
+      showToast('File uploaded — run ingestion to index it');
+    }
+  }
+
+  // ── Ingestion ──────────────────────────────────────────────
+  function addLog(msg, type = '') {
+    const log = document.getElementById('ingest-log');
+    const span = document.createElement('span');
+    span.className = 'log-line ' + type;
+    span.textContent = msg;
+    log.appendChild(span);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  async function runIngestion(mode) {
+    const log = document.getElementById('ingest-log');
+    log.innerHTML = '';
+    addLog('Starting ingestion pipeline...', 'info');
+    addLog(`Mode: ${mode === 'all' ? 're-index all' : 'new documents only'}`, 'info');
+
+    document.getElementById('btn-ingest-all').disabled = true;
+    document.getElementById('btn-ingest-new').disabled = true;
+
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      const resp = await fetch('https://adxsiwzyzmvflyitolol.supabase.co/functions/v1/ingest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ mode })
+      });
+
+      if (!resp.ok) {
+        addLog(`Error: ${resp.status} ${resp.statusText}`, 'error');
+        addLog('Note: The ingest Edge Function needs to be deployed separately.', 'error');
+      } else {
+        const data = await resp.json();
+        addLog(`✓ Ingestion complete: ${data.processed} files processed`, 'success');
+        loadStats();
+        loadDocuments();
+      }
+    } catch (err) {
+      addLog(`Error: ${err.message}`, 'error');
+      addLog('Make sure the ingest Edge Function is deployed in Supabase.', 'info');
+    }
+
+    document.getElementById('btn-ingest-all').disabled = false;
+    document.getElementById('btn-ingest-new').disabled = false;
+  }
+
+  async function clearKnowledgeBase() {
+    if (!confirm('This will remove ALL indexed document chunks. The bot will not be able to answer questions until you re-run ingestion. Continue?')) return;
+    const { error } = await sb.from('document_chunks').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (error) { showToast('Error: ' + error.message); return; }
+    showToast('Knowledge base cleared');
+    loadStats();
+    loadDocuments();
+  }
+
+  // ── Settings ───────────────────────────────────────────────
+  function syncColor(type) {
+    const hex = document.getElementById(`setting-${type}-hex`).value;
+    document.getElementById(`setting-${type}-color`).value = hex;
+  }
+
+  document.getElementById('setting-primary-color').addEventListener('input', e => {
+    document.getElementById('setting-primary-hex').value = e.target.value;
+  });
+  document.getElementById('setting-accent-color').addEventListener('input', e => {
+    document.getElementById('setting-accent-hex').value = e.target.value;
+  });
+
+  async function saveSettings() {
+    const settings = {
+      building_name: document.getElementById('setting-name').value,
+      corp_number: document.getElementById('setting-corp').value,
+      address: document.getElementById('setting-address').value,
+      pm_email: document.getElementById('setting-pm-email').value,
+      pm_phone: document.getElementById('setting-pm-phone').value,
+      concierge_phone: document.getElementById('setting-concierge').value,
+      primary_color: document.getElementById('setting-primary-hex').value,
+      accent_color: document.getElementById('setting-accent-hex').value,
+      welcome_message: document.getElementById('setting-welcome').value,
+      placeholder_text: document.getElementById('setting-placeholder').value,
+      quick_questions: document.getElementById('setting-quick-questions').value.split('\n').filter(q => q.trim()),
+      updated_at: new Date().toISOString()
+    };
+
+    localStorage.setItem('yorkdale_settings', JSON.stringify(settings));
+    showToast('Settings saved');
+  }
+
+  // ── Toast ──────────────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+
+</body>
+</html>
