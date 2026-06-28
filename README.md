@@ -1,6 +1,6 @@
 # Yorkdale Condo Bot — Frontend
 
-Clean, mobile-friendly web chat widget for TSCC #2937 residents.
+Clean, web, email & mobile-friendly chat widget for condo residents/owners.
 
 ## Deploy to Vercel
 
