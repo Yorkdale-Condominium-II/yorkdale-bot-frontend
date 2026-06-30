@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Yorkdale Condominium II</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1a3a5c;
+      --primary-light: #e8f0f8;
+      --primary-mid: #2d5a8e;
+      --accent: #2e7d52;
+      --accent-light: #e8f5ee;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --gray-50: #f8f9fa;
+      --gray-100: #f1f3f5;
+      --gray-200: #e9ecef;
+      --gray-500: #868e96;
+      --gray-700: #495057;
+      --gray-900: #212529;
+      --white: #ffffff;
+      --radius: 12px;
+      --radius-sm: 6px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-900);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--primary);
+      color: var(--white);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow);
+    }
+
+    .header-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .header-text h1 { font-size: 16px; font-weight: 600; line-height: 1.2; }
+    .header-text p { font-size: 12px; opacity: 0.75; margin-top: 1px; }
+
+    .back-link {
+      margin-left: auto;
+      color: var(--white);
+      font-size: 13px;
+      text-decoration: none;
+      opacity: 0.85;
+      background: rgba(255,255,255,0.12);
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .back-link:hover { background: rgba(255,255,255,0.22); }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 28px 16px 40px;
+    }
+
+    .form-wrap {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .intro {
+      margin-bottom: 20px;
+    }
+
+    .intro h2 {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .intro p {
+      font-size: 13px;
+      color: var(--gray-700);
+      line-height: 1.6;
+    }
+
+    .recipient-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--primary-light);
+      border: 1px solid #d3e2f0;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      color: var(--primary);
+    }
+
+    .recipient-banner strong { font-weight: 600; }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .type-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .type-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--gray-700);
+      transition: all 0.15s;
+    }
+
+    .type-btn.active.inquiry { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+    .type-btn.active.complaint { border-color: var(--amber); background: var(--amber-light); color: var(--amber); }
+
+    .form-group { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"], input[type="email"], textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+      color: var(--gray-900);
+      background: var(--white);
+    }
+
+    input:focus, textarea:focus { border-color: var(--primary); }
+
+    textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 460px) { .row-2 { grid-template-columns: 1fr; } }
+
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 6px;
+    }
+
+    .btn-submit:hover { background: var(--primary-mid); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .form-msg {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .form-msg.success { background: var(--accent-light); color: var(--accent); display: block; }
+    .form-msg.error { background: var(--red-light); color: var(--red); display: block; }
+
+    .legal-note {
+      margin-top: 18px;
+      font-size: 11.5px;
+      color: var(--gray-500);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .legal-note a { color: var(--primary); text-decoration: underline; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">🏢</div>
+  <div class="header-text">
+    <h1>Yorkdale Condominium II</h1>
+    <p>Contact · 120 Varna Drive</p>
+  </div>
+  <a class="back-link" href="/">← Back to chat</a>
+</header>
+
+<main>
+  <div class="form-wrap">
+    <div class="intro">
+      <h2 id="form-title">Contact the Board</h2>
+      <p id="form-subtitle">Submit an inquiry or complaint and the board will follow up with you directly.</p>
+    </div>
+
+    <div class="recipient-banner" id="recipient-banner" style="display:none;">
+      <span>📨</span>
+      <span id="recipient-text"></span>
+    </div>
+
+    <div class="card">
+      <div class="type-toggle">
+        <button type="button" class="type-btn active inquiry" id="btn-type-inquiry" onclick="setType('inquiry')">General Inquiry</button>
+        <button type="button" class="type-btn complaint" id="btn-type-complaint" onclick="setType('complaint')">Complaint</button>
+      </div>
+
+      <form id="contact-form" onsubmit="submitForm(event)">
+        <div class="row-2">
+          <div class="form-group">
+            <label>Full name</label>
+            <input type="text" id="name" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label>Unit number</label>
+            <input type="text" id="unit" autocomplete="off" placeholder="e.g. 1201" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" id="email" required autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label id="message-label">Message</label>
+          <textarea id="message" required placeholder="Describe your inquiry or complaint in detail..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submit-btn">Submit</button>
+
+        <div class="form-msg" id="form-msg"></div>
+      </form>
+
+      <p class="legal-note">
+        Submissions are reviewed by the board or property manager and are not an automated or legally binding response.
+      </p>
+    </div>
+  </div>
+</main>
+
+<script>
+  const FUNCTIONS_URL = "https://adxsiwzyzmvflyitolol.supabase.co/functions/v1";
+  const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHNpd3p5em12Zmx5aXRvbG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDMxNDEsImV4cCI6MjA5NzkxOTE0MX0.PqR3BiWnthqlp_gV-yzrgz1LWMQi4gZVxS7qCvS0Koc";
+
+  let currentType = "inquiry";
+
+  // ── Read URL params to detect recipient and pre-fill context ──
+  const params = new URLSearchParams(window.location.search);
+  const recipient = params.get("to"); // "board" or "manager"
+
+  const recipientInfo = {
+    board: {
+      label: "Board of Directors",
+      detail: "Your message will be sent to the TSCC #2937 Board.",
+      title: "Contact the Board",
+      subtitle: "Submit an inquiry or complaint and the board will follow up with you directly."
+    },
+    manager: {
+      label: "Property Manager",
+      detail: "Your message will be sent to the Property Manager (manager.yorkdalecondo@gmail.com).",
+      title: "Contact the Property Manager",
+      subtitle: "Submit a maintenance request, inquiry, or complaint directly to the property manager."
+    }
+  };
+
+  if (recipient && recipientInfo[recipient]) {
+    const info = recipientInfo[recipient];
+    document.getElementById("form-title").textContent = info.title;
+    document.getElementById("form-subtitle").textContent = info.subtitle;
+    const banner = document.getElementById("recipient-banner");
+    banner.style.display = "flex";
+    document.getElementById("recipient-text").innerHTML = `<strong>To: ${info.label}</strong> — ${info.detail}`;
+  }
+
+  // Pre-fill name/email/message from query params if present
+  if (params.get("name")) document.getElementById("name").value = params.get("name");
+  if (params.get("email")) document.getElementById("email").value = params.get("email");
+  if (params.get("unit")) document.getElementById("unit").value = params.get("unit");
+  if (params.get("message")) document.getElementById("message").value = params.get("message");
+  if (params.get("type") === "complaint") setType("complaint");
+
+  function setType(type) {
+    currentType = type;
+    document.getElementById("btn-type-inquiry").classList.toggle("active", type === "inquiry");
+    document.getElementById("btn-type-complaint").classList.toggle("active", type === "complaint");
+    document.getElementById("message-label").textContent = type === "complaint" ? "Describe the complaint" : "Message";
+  }
+
+  async function submitForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById("submit-btn");
+    const msgBox = document.getElementById("form-msg");
+    msgBox.className = "form-msg";
+    msgBox.style.display = "none";
+
+    const payload = {
+      type: currentType,
+      name: document.getElementById("name").value.trim(),
+      unit: document.getElementById("unit").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      message: document.getElementById("message").value.trim(),
+    };
+
+    if (recipient && recipientInfo[recipient]) {
+      payload.message = `[Routed to: ${recipientInfo[recipient].label}]\n\n${payload.message}`;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+
+    try {
+      const res = await fetch(`${FUNCTIONS_URL}/submit-inquiry`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${ANON_KEY}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Something went wrong.");
+
+      msgBox.className = "form-msg success";
+      msgBox.textContent = data.message || "Your submission has been received.";
+      msgBox.style.display = "block";
+      document.getElementById("contact-form").reset();
+      setType("inquiry");
+
+    } catch (err) {
+      msgBox.className = "form-msg error";
+      msgBox.textContent = "Sorry, something went wrong. Please try again or email manager.yorkdalecondo@gmail.com directly.";
+      msgBox.style.display = "block";
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Submit";
+    }
+  }
+</script>
+
+</body>
+</html>
