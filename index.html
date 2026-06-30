@@ -12,6 +12,8 @@
       --primary-light: #e8f0f8;
       --accent: #2e7d52;
       --accent-light: #e8f5ee;
+      --amber: #b45309;
+      --amber-light: #fef3c7;
       --gray-50: #f8f9fa;
       --gray-100: #f1f3f5;
       --gray-200: #e9ecef;
@@ -43,6 +45,7 @@
       gap: 12px;
       flex-shrink: 0;
       box-shadow: var(--shadow);
+      flex-wrap: wrap;
     }
 
     .header-icon {
@@ -69,12 +72,38 @@
       margin-top: 1px;
     }
 
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .contact-btn {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 6px;
+      color: var(--white);
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 7px 11px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .contact-btn:hover { background: rgba(255,255,255,0.24); }
+
     .status-dot {
       width: 8px;
       height: 8px;
       background: #4caf50;
       border-radius: 50%;
-      margin-left: auto;
       flex-shrink: 0;
     }
 
@@ -355,6 +384,74 @@
       #chat-area { padding: 24px; }
       .message { max-width: 75%; }
     }
+
+    /* ── Disclaimer modal ── */
+    #disclaimer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 25, 38, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    #disclaimer-overlay.show { display: flex; }
+
+    .disclaimer-modal {
+      background: var(--white);
+      border-radius: 16px;
+      max-width: 420px;
+      width: 100%;
+      padding: 26px 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      animation: modalIn 0.18s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .disclaimer-modal .icon {
+      width: 44px; height: 44px;
+      background: var(--amber-light);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    .disclaimer-modal h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .disclaimer-modal p {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--gray-700);
+      margin-bottom: 14px;
+    }
+
+    .disclaimer-modal .btn-ack {
+      width: 100%;
+      padding: 11px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .disclaimer-modal .btn-ack:hover { background: #15304d; }
   </style>
 </head>
 <body>
@@ -365,8 +462,12 @@
     <h1>Yorkdale Condominium II</h1>
     <p>Resident Assistant · 120 Varna Drive</p>
   </div>
-  <button class="reset-btn" onclick="resetChat()" title="Start a new conversation">↺ New chat</button>
-  <div class="status-dot" title="Online"></div>
+  <div class="header-actions">
+    <a class="contact-btn" id="btn-contact-manager">🛠️ Property Manager</a>
+    <a class="contact-btn" id="btn-contact-board">📋 Board</a>
+    <button class="reset-btn" onclick="resetChat()" title="Start a new conversation">↺ New chat</button>
+    <div class="status-dot" title="Online"></div>
+  </div>
 </header>
 
 <div id="chat-area">
@@ -397,14 +498,62 @@
   <p class="disclaimer">Answers are based on TSCC #2937 documents. Always verify important decisions with the board.</p>
 </div>
 
+<!-- ── Disclaimer modal ── -->
+<div id="disclaimer-overlay">
+  <div class="disclaimer-modal">
+    <div class="icon">⚠️</div>
+    <h3>Before you continue</h3>
+    <p>
+      I'm Maxwell, the resident assistant for Yorkdale Condominium II. The information I provide is for general guidance only and is <strong>not legal advice</strong> and not a definitive or binding answer on behalf of the Corporation.
+    </p>
+    <p>
+      For anything that is legally binding, requires a formal decision, or involves a dispute, please contact the <strong>Board</strong> or the <strong>Property Manager</strong> directly using the buttons in the header above.
+    </p>
+    <button class="btn-ack" onclick="acknowledgeDisclaimer()">I understand, continue</button>
+  </div>
+</div>
+
 <script>
   const API_URL = "https://adxsiwzyzmvflyitolol.supabase.co/functions/v1";
+  const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHNpd3p5em12Zmx5aXRvbG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDMxNDEsImV4cCI6MjA5NzkxOTE0MX0.PqR3BiWnthqlp_gV-yzrgz1LWMQi4gZVxS7qCvS0Koc";
   let sessionId = null;
   let isLoading = false;
+  let disclaimerAcknowledged = false;
+  let pendingAction = null; // holds a function to run after acknowledgment
 
   const chatArea = document.getElementById("chat-area");
   const input = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
+  const overlay = document.getElementById("disclaimer-overlay");
+
+  // ── Contact buttons — route to contact.html with prefilled recipient ──
+  document.getElementById("btn-contact-manager").href = "/contact?to=manager";
+  document.getElementById("btn-contact-board").href = "/contact?to=board";
+
+  // ── Disclaimer modal logic ──
+  function showDisclaimer(action) {
+    if (disclaimerAcknowledged) {
+      if (action) action();
+      return;
+    }
+    pendingAction = action;
+    overlay.classList.add("show");
+  }
+
+  function acknowledgeDisclaimer() {
+    disclaimerAcknowledged = true;
+    overlay.classList.remove("show");
+    if (pendingAction) {
+      const action = pendingAction;
+      pendingAction = null;
+      action();
+    }
+  }
+
+  // Allow contact.html link to trigger the disclaimer view manually if needed
+  document.addEventListener("show-disclaimer", () => {
+    overlay.classList.add("show");
+  });
 
   // Auto-resize textarea
   input.addEventListener("input", () => {
@@ -424,7 +573,7 @@
     sessionId = null;
     chatArea.innerHTML = `
       <div class="welcome" id="welcome">
-        <h2>Hello, neighbour!</h2>
+        <h2>Hello, neighbour I am Maxwell!</h2>
         <p>I can answer questions about building rules, policies, move-in procedures, appliances, and your rights as a resident. What can I help you with?</p>
         <div class="quick-questions">
           <button class="quick-btn" onclick="askQuick('What are the quiet hours?')">Quiet hours</button>
@@ -441,8 +590,10 @@
   }
 
   function askQuick(question) {
-    input.value = question;
-    sendMessage();
+    showDisclaimer(() => {
+      input.value = question;
+      sendMessage();
+    });
   }
 
   function hideWelcome() {
@@ -462,17 +613,14 @@
     const bubble = document.createElement("div");
     bubble.className = "bubble";
 
-    // Render simple markdown (bold, newlines)
     const formatted = content
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
       .replace(/\n/g, "<br>");
     bubble.innerHTML = formatted;
 
-    // Sources — map filenames to readable names, deduplicate, only show when cited
     const hasSourceCitation = content.toLowerCase().includes("source:");
     if (hasSourceCitation && sources && sources.length > 0 && role === "assistant") {
 
-      // Map raw filenames to readable document names
       const nameMap = {
         "declaration": "Declaration",
         "by-law": "By-Laws",
@@ -509,8 +657,7 @@
         for (const [key, label] of Object.entries(nameMap)) {
           if (lower.includes(key)) return label;
         }
-        // Fallback: title-case the cleaned filename
-        return lower.replace(/[-_]/g, " ").replace(/\w/g, c => c.toUpperCase());
+        return lower.replace(/[-_]/g, " ").replace(/\w/g, c => c.toUpperCase());
       }
 
       const cleanSources = [...new Set(sources.map(toReadableName))].filter(s => s.length > 0);
@@ -525,7 +672,6 @@
       }
     }
 
-    // Escalation notice
     if (escalated && role === "assistant") {
       const esc = document.createElement("div");
       esc.className = "escalation-notice";
@@ -559,10 +705,16 @@
     if (indicator) indicator.remove();
   }
 
-  async function sendMessage() {
+  function sendMessage() {
     const message = input.value.trim();
     if (!message || isLoading) return;
 
+    showDisclaimer(() => {
+      doSendMessage(message);
+    });
+  }
+
+  async function doSendMessage(message) {
     isLoading = true;
     sendBtn.disabled = true;
     input.value = "";
@@ -574,7 +726,7 @@
     try {
       const response = await fetch(`${API_URL}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHNpd3p5em12Zmx5aXRvbG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDMxNDEsImV4cCI6MjA5NzkxOTE0MX0.PqR3BiWnthqlp_gV-yzrgz1LWMQi4gZVxS7qCvS0Koc" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${ANON_KEY}` },
         body: JSON.stringify({
           message,
           session_id: sessionId,
@@ -594,7 +746,7 @@
       hideTyping();
       appendMessage(
         "assistant",
-        "Sorry, I'm having trouble connecting right now. Please try again in a moment, or contact the management office directly at manager.yorkdalecondo@gmail.com or 416-782-1313.",
+        "Sorry, Maxwell is having trouble connecting right now. Please try again in a moment, or contact the management office directly at manager.yorkdalecondo@gmail.com or 416-782-1313.",
         [],
         false
       );
